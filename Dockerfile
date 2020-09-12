@@ -1,7 +1,7 @@
 #
-# youtube-dl Server Dockerfile
+# youtube-dlc Server Dockerfile
 #
-# https://github.com/dotpanic/youtube-dl-server
+# https://github.com/dotpanic/youtube-dlc-server
 #
 
 FROM python:alpine
@@ -9,7 +9,7 @@ FROM python:alpine
 
 RUN mkdir -p /usr/src/app
 COPY ./ydl_server /usr/src/app/ydl_server
-COPY ./youtube-dl-server.py /usr/src/app/
+COPY ./youtube-dlc-server.py /usr/src/app/
 
 # Download static files (JS/CSS Libraries)
 WORKDIR /usr/src/app/ydl_server/static
@@ -30,6 +30,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 EXPOSE 8080
 
-VOLUME ["/youtube-dl"]
+VOLUME ["/youtube-dlc"]
 
-CMD [ "python", "-u", "./youtube-dl-server.py" ]
+CMD [ "python", "-u", "./youtube-dlc-server.py" ]

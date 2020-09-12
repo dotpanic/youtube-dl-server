@@ -176,7 +176,7 @@ function get_finished_files() {
 }
 
 function ydl_update() {
-    $.get("api/youtube-dl/update");
+    $.get("api/youtube-dlc/update");
 }
 
 function hide_logs_detail() {

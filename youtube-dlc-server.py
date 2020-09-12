@@ -1,16 +1,16 @@
 from __future__ import unicode_literals
+
 import json
 import os
 from collections import ChainMap
-from itertools import chain
 from operator import itemgetter
-from queue import Queue
-from bottle import route, run, Bottle, request, static_file, template
-from threading import Thread
 from pathlib import Path
-from ydl_server.logdb import JobsDB, Job, Actions, JobType
+
+from bottle import Bottle, request, static_file, template
+
 from ydl_server import jobshandler, ydlhandler
 from ydl_server.config import app_defaults
+from ydl_server.logdb import JobsDB, Job, Actions, JobType
 
 app = Bottle()
 
@@ -104,11 +104,13 @@ def api_metadata_fetch():
     url = request.forms.get("url")
     return ydlhandler.fetch_metadata(url)
 
-@app.route("/api/youtube-dl/update", method="GET")
+
+@app.route("/api/youtube-dlc/update", method="GET")
 def ydl_update():
-    job = Job("Youtube-dl Update", Job.PENDING, "", JobType.YDL_UPDATE, None, None)
+    job = Job("Youtube-dlc Update", Job.PENDING, "", JobType.YDL_UPDATE, None, None)
     jobshandler.put((Actions.INSERT, job))
     return {"success": True}
+
 
 JobsDB.check_db_latest()
 JobsDB.init_db()
@@ -118,9 +120,8 @@ print("Started download thread")
 jobshandler.start(ydlhandler.queue)
 print("Started jobs manager thread")
 
-
-print("Updating youtube-dl to the newest version")
-job = Job("Youtube-dl Update", Job.PENDING, "", JobType.YDL_UPDATE, None, None)
+print("Updating youtube-dlc to the newest version")
+job = Job("Youtube-dlc Update", Job.PENDING, "", JobType.YDL_UPDATE, None, None)
 jobshandler.put((Actions.INSERT, job))
 
 ydlhandler.resume_pending()

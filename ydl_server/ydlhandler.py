@@ -3,11 +3,12 @@ import io
 import os
 import subprocess
 import sys
-import youtube_dl
 from collections import ChainMap
 from queue import Queue
 from threading import Thread
 from time import sleep
+
+import youtube_dlc
 
 from ydl_server import jobshandler
 from ydl_server.config import app_defaults
@@ -64,7 +65,7 @@ def reload_youtube_dl():
 
 
 def update():
-    command = ["pip", "install", "--no-cache-dir", "--upgrade", "youtube-dl"]
+    command = ["pip", "install", "--no-cache-dir", "--upgrade", "youtube-dlc"]
     proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     out, err = proc.communicate()
     if proc.returncode == 0:
@@ -91,14 +92,14 @@ def get_ydl_options(request_options):
 
     postprocessors = []
 
-    if (ydl_vars['YDL_EXTRACT_AUDIO_FORMAT']):
+    if ydl_vars['YDL_EXTRACT_AUDIO_FORMAT']:
         postprocessors.append({
             'key': 'FFmpegExtractAudio',
             'preferredcodec': ydl_vars['YDL_EXTRACT_AUDIO_FORMAT'],
             'preferredquality': ydl_vars['YDL_EXTRACT_AUDIO_QUALITY'],
         })
 
-    if (ydl_vars['YDL_RECODE_VIDEO_FORMAT']):
+    if ydl_vars['YDL_RECODE_VIDEO_FORMAT']:
         postprocessors.append({
             'key': 'FFmpegVideoConvertor',
             'preferedformat': ydl_vars['YDL_RECODE_VIDEO_FORMAT'],
@@ -136,13 +137,13 @@ def fetch_metadata(url):
     stdout = io.StringIO()
     stderr = io.StringIO()
     info = None
-    with youtube_dl.YoutubeDL({'extract_flat': 'in_playlist'}) as ydl:
+    with youtube_dlc.YoutubeDL({'extract_flat': 'in_playlist'}) as ydl:
         ydl.params['extract_flat'] = 'in_playlist'
         return ydl.extract_info(url, download=False)
 
 
 def download(url, request_options, output, job_id):
-    with youtube_dl.YoutubeDL(get_ydl_options(request_options)) as ydl:
+    with youtube_dlc.YoutubeDL(get_ydl_options(request_options)) as ydl:
         ydl.params['extract_flat'] = 'in_playlist'
         ydl_opts = ChainMap(os.environ, app_defaults)
         info = ydl.extract_info(url, download=False)
@@ -180,4 +181,4 @@ def join():
 
 
 def get_ydl_version():
-    return youtube_dl.version.__version__
+    return youtube_dlc.version.__version__
