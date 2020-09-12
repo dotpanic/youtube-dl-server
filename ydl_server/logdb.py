@@ -1,14 +1,13 @@
-import os
-import sqlite3
 import re
-from queue import Queue
-from threading import Thread
+import sqlite3
+
 from ydl_server.config import app_defaults
 
-STATUS_NAME =["Running",
-        "Completed",
-        "Failed",
-        "Pending"]
+STATUS_NAME = ["Running",
+               "Completed",
+               "Failed",
+               "Pending"]
+
 
 class Actions:
     DOWNLOAD = 1
@@ -20,9 +19,11 @@ class Actions:
     SET_STATUS = 7
     SET_LOG = 8
 
+
 class JobType:
     YDL_DOWNLOAD = 0
     YDL_UPDATE = 1
+
 
 class Job:
     RUNNING = 0
@@ -51,6 +52,7 @@ class Job:
                 clean = '%s%s\n' % (clean, line)
         return clean
 
+
 class JobsDB:
 
     @staticmethod
@@ -63,7 +65,6 @@ class JobsDB:
             print("Outdated jbos table, cleaning up and recreating")
             cursor.execute("DROP TABLE if exists jobs;")
         conn.close()
-
 
     @staticmethod
     def init_db():
@@ -83,9 +84,8 @@ class JobsDB:
 
     def __init__(self, readonly=True):
         self.conn = sqlite3.connect("file://%s%s" % (app_defaults['YDL_DB_PATH'],
-                                            "?mode=ro" if readonly else ""),
+                                                     "?mode=ro" if readonly else ""),
                                     uri=True)
-
 
     def close(self):
         self.conn.close()
@@ -94,8 +94,8 @@ class JobsDB:
         cursor = self.conn.cursor()
         cursor.execute("INSERT INTO jobs (name, status, log, format, type, \
                 url) VALUES (?, ?, ?, ?, ?, ?);",
-                (job.name, str(job.status), job.log, job.format, str(job.type),
-                    job.url))
+                       (job.name, str(job.status), job.log, job.format, str(job.type),
+                        job.url))
         job.id = cursor.lastrowid
         self.conn.commit()
 
@@ -130,15 +130,17 @@ class JobsDB:
 
     def get_all(self, limit=50):
         cursor = self.conn.cursor()
-        cursor.execute("SELECT id, name, status, log, last_update, format, type, url from jobs ORDER BY last_update DESC LIMIT ?;", (str(limit),))
+        cursor.execute(
+            "SELECT id, name, status, log, last_update, format, type, url from jobs ORDER BY last_update DESC LIMIT ?;",
+            (str(limit),))
         rows = []
         for job_id, name, status, log, last_update, format, jobtype, url in cursor.fetchall():
             rows.append({'id': job_id,
-                        'name': name,
-                        'status': STATUS_NAME[status],
-                        'log': log,
-                        'format': format,
-                        'last_update': last_update,
-                        'type': jobtype,
-                        'url': url})
+                         'name': name,
+                         'status': STATUS_NAME[status],
+                         'log': log,
+                         'format': format,
+                         'last_update': last_update,
+                         'type': jobtype,
+                         'url': url})
         return rows

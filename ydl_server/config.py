@@ -14,5 +14,5 @@ app_defaults = {
     'YDL_DEBUG': False,
     'YDL_RAW_OPTIONS': {
         'ignoreerrors': True
-        },
+    },
 }

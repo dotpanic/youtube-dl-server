@@ -1,20 +1,25 @@
 from queue import Queue
 from threading import Thread
-from ydl_server.logdb import JobsDB, Job, Actions
+
+from ydl_server.logdb import JobsDB, Actions
 
 queue = Queue()
 thread = None
 done = False
 
+
 def start(dl_queue):
     thread = Thread(target=worker, args=(dl_queue,))
     thread.start()
 
+
 def put(obj):
     queue.put(obj)
 
+
 def finish():
     done = True
+
 
 def worker(dl_queue):
     db = JobsDB(readonly=False)
@@ -40,6 +45,7 @@ def worker(dl_queue):
             job_id, status = job
             db.set_job_status(job_id, status)
         queue.task_done()
+
 
 def join():
     if thread is not None:

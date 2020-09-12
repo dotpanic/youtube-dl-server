@@ -1,32 +1,35 @@
+import importlib
+import io
 import os
+import subprocess
+import sys
+import youtube_dl
+from collections import ChainMap
 from queue import Queue
 from threading import Thread
-import subprocess
-from collections import ChainMap
-import io
-import importlib
-import youtube_dl
-import json
 from time import sleep
-import sys
 
-from ydl_server.logdb import JobsDB, Job, Actions, JobType
 from ydl_server import jobshandler
 from ydl_server.config import app_defaults
+from ydl_server.logdb import JobsDB, Job, Actions, JobType
 
 queue = Queue()
 thread = None
 done = False
 
+
 def start():
     thread = Thread(target=worker)
     thread.start()
 
+
 def put(obj):
     queue.put(obj)
 
+
 def finish():
     done = True
+
 
 def worker():
     while not done:
@@ -36,10 +39,10 @@ def worker():
         if job.type == JobType.YDL_DOWNLOAD:
             output = io.StringIO()
             stdout_thread = Thread(target=download_log_update,
-                    args=(job, output))
+                                   args=(job, output))
             stdout_thread.start()
             try:
-                job.log = Job.clean_logs(download(job.url, {'format':  job.format}, output, job.id))
+                job.log = Job.clean_logs(download(job.url, {'format': job.format}, output, job.id))
                 job.status = Job.COMPLETED
             except Exception as e:
                 job.status = Job.FAILED
@@ -53,10 +56,12 @@ def worker():
         jobshandler.put((Actions.UPDATE, job))
         queue.task_done()
 
+
 def reload_youtube_dl():
     for module in list(sys.modules.keys()):
         if 'youtube' in module:
             importlib.reload(sys.modules[module])
+
 
 def update():
     command = ["pip", "install", "--no-cache-dir", "--upgrade", "youtube-dl"]
@@ -65,6 +70,7 @@ def update():
     if proc.returncode == 0:
         reload_youtube_dl()
     return proc.returncode, str(out.decode('utf-8'))
+
 
 def get_ydl_options(request_options):
     request_vars = {
@@ -85,14 +91,14 @@ def get_ydl_options(request_options):
 
     postprocessors = []
 
-    if(ydl_vars['YDL_EXTRACT_AUDIO_FORMAT']):
+    if (ydl_vars['YDL_EXTRACT_AUDIO_FORMAT']):
         postprocessors.append({
             'key': 'FFmpegExtractAudio',
             'preferredcodec': ydl_vars['YDL_EXTRACT_AUDIO_FORMAT'],
             'preferredquality': ydl_vars['YDL_EXTRACT_AUDIO_QUALITY'],
         })
 
-    if(ydl_vars['YDL_RECODE_VIDEO_FORMAT']):
+    if (ydl_vars['YDL_RECODE_VIDEO_FORMAT']):
         postprocessors.append({
             'key': 'FFmpegVideoConvertor',
             'preferedformat': ydl_vars['YDL_RECODE_VIDEO_FORMAT'],
@@ -112,17 +118,19 @@ def get_ydl_options(request_options):
         ydl_options['writesubtitles'] = True
         if ydl_vars['YDL_SUBTITLES_LANGUAGES'] != 'all':
             ydl_options['subtitleslangs'] = \
-                    ydl_vars['YDL_SUBTITLES_LANGUAGES'].split(',')
+                ydl_vars['YDL_SUBTITLES_LANGUAGES'].split(',')
         else:
             ydl_options['allsubtitles'] = True
 
     return ydl_options
+
 
 def download_log_update(job, stringio):
     while job.status == Job.RUNNING:
         job.log = Job.clean_logs(stringio.getvalue())
         jobshandler.put((Actions.SET_LOG, (job.id, job.log)))
         sleep(5)
+
 
 def fetch_metadata(url):
     stdout = io.StringIO()
@@ -131,6 +139,7 @@ def fetch_metadata(url):
     with youtube_dl.YoutubeDL({'extract_flat': 'in_playlist'}) as ydl:
         ydl.params['extract_flat'] = 'in_playlist'
         return ydl.extract_info(url, download=False)
+
 
 def download(url, request_options, output, job_id):
     with youtube_dl.YoutubeDL(get_ydl_options(request_options)) as ydl:
@@ -142,13 +151,14 @@ def download(url, request_options, output, job_id):
         if '_type' in info and info['_type'] == 'playlist' \
                 and 'YDL_OUTPUT_TEMPLATE_PLAYLIST' in ydl_opts:
             ydl.params['outtmpl'] = ydl_opts['YDL_OUTPUT_TEMPLATE_PLAYLIST']
-        ydl.params['extract_flat']= False
+        ydl.params['extract_flat'] = False
 
         # Swap out sys.stdout as ydl's output so we can capture it
         ydl._screen_file = output
         ydl._err_file = ydl._screen_file
         ydl.download([url])
         return ydl._screen_file.getvalue()
+
 
 def resume_pending():
     db = JobsDB(readonly=False)
@@ -159,13 +169,15 @@ def resume_pending():
             jobshandler.put((Actions.SET_STATUS, (pending["id"], Job.FAILED)))
         else:
             job = Job(pending["name"], Job.PENDING, "Queue stopped",
-                    int(pending["type"]), pending["format"], pending["url"])
+                      int(pending["type"]), pending["format"], pending["url"])
             job.id = pending["id"]
             jobshandler.put((Actions.RESUME, job))
+
 
 def join():
     if thread is not None:
         return thread.join()
+
 
 def get_ydl_version():
     return youtube_dl.version.__version__
