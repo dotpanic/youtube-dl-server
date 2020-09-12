@@ -1,7 +1,7 @@
 #
 # youtube-dl Server Dockerfile
 #
-# https://github.com/nbr23/youtube-dl-server
+# https://github.com/dotpanic/youtube-dl-server
 #
 
 FROM python:alpine
