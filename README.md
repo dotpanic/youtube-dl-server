@@ -4,7 +4,7 @@
 
 # youtube-dlc-server
 
-Simple Web and REST interface for downloading youtube videos onto a server. [`bottle`](https://github.com/bottlepy/bottle) + [`youtube-dl`](https://github.com/blackjack4494/youtube-dlc).
+Simple Web and REST interface for downloading youtube videos onto a server. [`bottle`](https://github.com/bottlepy/bottle) + [`youtube-dlc`](https://github.com/blackjack4494/youtube-dlc).
 
 Forked from [nbr23/youtube-dl-server](https://github.com/nbr23/youtube-dl-server).
 
