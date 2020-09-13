@@ -1,0 +1,29 @@
+name: Build docker image nightly
+
+on:
+  schedule:
+  - cron: "0 0 * * *"
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2.3.2
+      name: Check out code
+
+    - name: Get nightly tag
+      id: tag
+      run: echo "::set-output name=tag::nightly-$(date +'%Y-%m-%d')"
+
+    - uses: mr-smithers-excellent/docker-build-push@v4
+      name: Build & push Docker image
+      with:
+        image: dotpanic/youtube-dlc-server
+        tag: ${{ steps.tag.outputs.tag }}
+        registry: docker.io
+        dockerfile: Dockerfile
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
