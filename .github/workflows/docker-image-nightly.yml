@@ -19,10 +19,20 @@ jobs:
       run: echo "::set-output name=tag::nightly-$(date +'%Y-%m-%d')"
 
     - uses: mr-smithers-excellent/docker-build-push@v4
-      name: Build & push Docker image
+      name: Build & push Docker image with nightly tag
       with:
         image: dotpanic/youtube-dlc-server
         tag: ${{ steps.tag.outputs.tag }}
+        registry: docker.io
+        dockerfile: Dockerfile
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - uses: mr-smithers-excellent/docker-build-push@v4
+      name: Build & push Docker image with latest tag
+      with:
+        image: dotpanic/youtube-dlc-server
+        tag: latest
         registry: docker.io
         dockerfile: Dockerfile
         username: ${{ secrets.DOCKER_USERNAME }}
