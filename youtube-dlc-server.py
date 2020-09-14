@@ -53,13 +53,7 @@ def api_list_finished():
 @app.route('/api/finished/:filename#.*#')
 def api_serve_finished_file(filename):
     root_dir = Path(app_vars['YDL_OUTPUT_TEMPLATE']).parent
-    response = static_file(filename, root=root_dir)
-    file_extension = os.path.splitext(filename)[1]
-
-    if file_extension == 'mkv':
-        response.content_type = 'video/x-matroska'
-
-    return response
+    return static_file(filename, root=root_dir, mimetype='application/octet-stream')
 
 @app.route('/static/:filename#.*#')
 def server_static(filename):
