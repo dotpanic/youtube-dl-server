@@ -2,7 +2,7 @@ name: Build docker image nightly
 
 on:
   schedule:
-  - cron: "0 0 * * *"
+    - cron: "23 59 * * *"
 
 jobs:
 
