@@ -20,7 +20,7 @@ jobs:
       name: Build & push Docker image
       with:
         image: dotpanic/youtube-dlc-server
-        tag: latest
+        tag: latest-stable
         registry: docker.io
         dockerfile: Dockerfile
         username: ${{ secrets.DOCKER_USERNAME }}
