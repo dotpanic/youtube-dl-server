@@ -10,7 +10,6 @@ Forked from [nbr23/youtube-dl-server](https://github.com/nbr23/youtube-dl-server
 
 ![screenshot][1]
 
-
 ![screenshot][2]
 
 ## Running
@@ -22,7 +21,7 @@ For easier deployment, a docker image is available on [dockerhub](https://hub.do
 This example uses the docker run command to create the container to run the app. Note the `-v` argument to specify the volume and its binding on the host. This directory will be used to output the resulting videos.
 
 ```shell
-docker run -d --name youtube-dlc -v $HOME/youtube-dlc:/youtube-dlc dotpanic/youtube-dlc-server
+docker run -d --name youtube-dlc -v $HOME/youtube-dlc:/youtube-dlc dotpanic/youtube-dlc-server -p 8080:8080
 ```
 
 ### Docker Compose
@@ -34,6 +33,8 @@ This is an example service definition that could be put in `docker-compose.yml`.
     image: "dotpanic/youtube-dlc-server"
     volumes:
       - $HOME/youtube-dlc:/youtube-dlc
+    ports:
+      - "8080"
     restart: always
 ```
 
@@ -55,6 +56,8 @@ docker-compose.yml:
       - ./config.env
     volumes:
       - $HOME/youtube-dlc:/youtube-dlc
+    ports:
+      - "8080"
     restart: always
 ```
 
