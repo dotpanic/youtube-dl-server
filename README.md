@@ -4,7 +4,7 @@
 
 # youtube-dlc-server
 
-Simple Web and REST interface for downloading youtube videos onto a server. [`bottle`](https://github.com/bottlepy/bottle) + [`youtube-dlc`](https://github.com/blackjack4494/youtube-dlc).
+Simple Web and REST interface for downloading youtube videos onto a server. [`bottle`](https://github.com/bottlepy/bottle) + [`youtube-dlc`](https://github.com/blackjack4494/yt-dlc).
 
 Forked from [nbr23/youtube-dl-server](https://github.com/nbr23/youtube-dl-server).
 
@@ -118,7 +118,7 @@ javascript:(function(){document.body.innerHTML += '<form name="ydl_form" method=
 
 ## Implementation
 
-The server uses [`bottle`](https://github.com/bottlepy/bottle) for the web framework and [`youtube-dlc`](https://github.com/blackjack4494/youtube-dlc) to handle the downloading. The integration with youtube-dlc makes use of their [python api](https://github.com/blackjack4494/youtube-dlc).
+The server uses [`bottle`](https://github.com/bottlepy/bottle) for the web framework and [`youtube-dlc`](https://github.com/blackjack4494/yt-dlc) to handle the downloading. The integration with youtube-dlc makes use of their [python api](https://github.com/blackjack4494/yt-dlc).
 
 This docker image is based on [`python:alpine`](https://registry.hub.docker.com/_/python/) and consequently [`alpine:3.8`](https://hub.docker.com/_/alpine/).
 
