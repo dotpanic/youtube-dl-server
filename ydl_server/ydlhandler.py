@@ -83,8 +83,10 @@ def get_ydl_options(request_options):
 
     if requested_format in ['aac', 'flac', 'mp3', 'm4a', 'opus', 'vorbis', 'wav']:
         request_vars['YDL_EXTRACT_AUDIO_FORMAT'] = requested_format
+        request_vars['YDL_FORMAT'] = 'bestaudio'
     elif requested_format == 'bestaudio':
         request_vars['YDL_EXTRACT_AUDIO_FORMAT'] = 'best'
+        request_vars['YDL_FORMAT'] = 'bestaudio'
     elif requested_format in ['mp4', 'flv', 'webm', 'ogg', 'mkv', 'avi']:
         request_vars['YDL_RECODE_VIDEO_FORMAT'] = requested_format
 
